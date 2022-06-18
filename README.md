@@ -1,4 +1,5 @@
 # node-js-basic
-take pull and do npm i
-run npm install -g nodemon
-your application is listning to http://localhost:3000
+1) take pull 
+2)  npm i
+3)  do npm install -g nodemon
+4)  your application is listning to http://localhost:3000
