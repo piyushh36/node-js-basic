@@ -25,6 +25,7 @@ app.get('/users', (req, res) => {
 
   res.send({
     status: 200,
+    message: 'Record find success',
     data: data
   })
 });
@@ -41,6 +42,7 @@ app.get('/user/:id', (req, res) => {
 
   res.send({
     status: 200,
+    message: 'Record find success',
     data: filterData
   })
 
@@ -48,12 +50,24 @@ app.get('/user/:id', (req, res) => {
 
 app.delete('/user/:id', (req, res) => {
   const {id} = req.params;
-  data = data.filter(val => val.id != Number(id))
-
-  res.send({
-    status: 200,
-    data: data
-  })
+  let {data} = JSON.parse(loadData())
+  if(data.length === 0) {
+    res.status(404).send('Data Not Found');
+  } else {
+    let index = data.findIndex(val => val.id === Number(id));
+    console.log('index', index);
+    if(index === -1) {
+      res.status(404).send('Data Not Found');
+    }  else {
+      data.splice(index, 1);
+      storeData(data)
+      res.send({
+        status: 200,
+        message: 'Record deleted success',
+        data: data
+      })
+    }
+  }
 })
 
 app.post('/user', (req, res) => {
@@ -73,6 +87,7 @@ app.post('/user', (req, res) => {
       storeData(data)
       res.send({
         status: 200,
+        message: 'Record added success',
         data: data
       })
     }
@@ -81,6 +96,7 @@ app.post('/user', (req, res) => {
     storeData(data)
     res.send({
       status: 200,
+      message: 'Record added success',
       data: data
     })
   
@@ -90,6 +106,7 @@ app.post('/user', (req, res) => {
 })
 
 app.put('/user/:id', (req, res) => {
+  let {data} = JSON.parse(loadData())
   const {id} = req.params
   const payload = req.body
 
@@ -97,16 +114,22 @@ app.put('/user/:id', (req, res) => {
     res.status(400).send('Data invalid');
   }
 
-  data.map(val => {
-    if(val.id === Number(id)) {
-      val.name = payload.name
+  if(data.length === 0) {
+    res.status(404).send('Data Not Found');
+  } else {
+    let index = data.findIndex(val => val.id === Number(id));
+    if(index === -1) {
+      res.status(404).send('Data Not Found');
+    }  else {
+      data[index].name = payload.name
+      storeData(data)
+      res.send({
+        status: 200,
+        message: "Record updated success",
+        data:data
+      })
     }
-  })
-  res.send({
-    status: 200,
-    data: data
-  })
-  
+  }
 })
 
 
